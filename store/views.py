@@ -5,13 +5,6 @@ from django.contrib.auth.models import User
 from django.contrib.auth.views import PasswordResetView
 
 
-
-class CustomPasswordResetView(PasswordResetView):
-    template_name = 'password_reset.html'
-
-
-
-
 def login_view(request):
     if request.method == 'POST':
         username = request.POST.get('username')
