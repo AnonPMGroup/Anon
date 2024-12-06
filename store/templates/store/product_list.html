@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <ul>
+        {% for product in products %}
+            <li>
+                <a href="{% url 'product-detail' product.id %}">
+                    {% if product.image %}
+                        <img src="{{ product.image.url }}" alt="{{ product.name }}" style="max-height: 100px;">
+                    {% endif %}
+                    {{ product.name }}
+                </a> - {{ product.price }}₽
+            </li>
+        {% empty %}
+            <li>Продукты не найдены.</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

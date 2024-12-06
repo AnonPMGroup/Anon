@@ -6005,7 +6005,7 @@ footer {
 
           <button class="action-btn">
             <!-- <ion-icon name="person-outline"></ion-icon> -->
-            <span>{{user.username}}</span>
+            <a href="{% url 'user-profile' %}">{{user.username}}</a>
             <form method="POST" action="{% url 'logout' %}">
               {% csrf_token %}
               <button type="submit" style="background-color: red; color: white; border: none; padding: 10px 20px; cursor: pointer;">
@@ -6187,53 +6187,31 @@ footer {
 
           <li class="menu-category">
             <a href="#" class="menu-title">Men's</a>
-
             <ul class="dropdown-list">
-
-              <li class="dropdown-item">
-                <a href="#">Shirt</a>
-              </li>
-
-              <li class="dropdown-item">
-                <a href="#">Shorts & Jeans</a>
-              </li>
-
-              <li class="dropdown-item">
-                <a href="#">Safety Shoes</a>
-              </li>
-
-              <li class="dropdown-item">
-                <a href="#">Wallet</a>
-              </li>
-
+              {% for category in categories %}
+                {% if category.category_type == 'M' %}
+                  <li class="dropdown-item">
+                    <a href="{% url 'category-detail' category.id %}">{{ category.name }}</a>
+                  </li>
+                {% endif %}
+              {% endfor %}
             </ul>
           </li>
 
           <li class="menu-category">
             <a href="#" class="menu-title">Women's</a>
-
             <ul class="dropdown-list">
-
-              <li class="dropdown-item">
-                <a href="#">Dress & Frock</a>
-              </li>
-
-              <li class="dropdown-item">
-                <a href="#">Earrings</a>
-              </li>
-
-              <li class="dropdown-item">
-                <a href="#">Necklace</a>
-              </li>
-
-              <li class="dropdown-item">
-                <a href="#">Makeup Kit</a>
-              </li>
-
+              {% for category in categories %}
+                {% if category.category_type == 'F' %}
+                  <li class="dropdown-item">
+                    <a href="{% url 'category-detail' category.id %}">{{ category.name }}</a>
+                  </li>
+                {% endif %}
+              {% endfor %}
             </ul>
           </li>
 
-          <li class="menu-category">
+          <!-- <li class="menu-category">
             <a href="#" class="menu-title">Jewelry</a>
 
             <ul class="dropdown-list">
@@ -6255,9 +6233,9 @@ footer {
               </li>
 
             </ul>
-          </li>
+          </li> -->
 
-          <li class="menu-category">
+          <!-- <li class="menu-category">
             <a href="#" class="menu-title">Perfume</a>
 
             <ul class="dropdown-list">
@@ -6279,7 +6257,7 @@ footer {
               </li>
 
             </ul>
-          </li>
+          </li> -->
 
           <li class="menu-category">
             <a href="#" class="menu-title">Blog</a>
