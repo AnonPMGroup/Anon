@@ -28,4 +28,11 @@ urlpatterns = [
     path('products/<int:pk>/', product_detail, name='product-detail'),
 
     path('profile/', user_profile, name='user-profile'),
+    path('cart/', cart_detail, name='cart-detail'),
+    path('cart/add/<int:product_id>/', add_to_cart_view, name='add-to-cart'),
+    path('cart/remove/<int:product_id>/', remove_from_cart_view, name='remove-from-cart'),
+    path('cart/increase/<int:product_id>/', increase_quantity_view, name='increase-quantity'),
+    path('cart/decrease/<int:product_id>/', decrease_quantity_view, name='decrease-quantity'),
+    path('favorites/toggle/<int:product_id>/', toggle_favorite, name='toggle-favorite'),
+    path('favorites/', favorite_list, name='favorite-list'),
 ]

@@ -2146,15 +2146,20 @@
                 </form>
               </button>
     
-              <button class="action-btn">
-                <ion-icon name="heart-outline"></ion-icon>
-                <span class="count">0</span>
-              </button>
+              <a href="{% url 'favorite-list' %}">
+                <button class="action-btn">
+                  <ion-icon name="heart-outline"></ion-icon>
+                  <span class="count">{{ fav_item_count }}</span>
+                </button>
+              </a>
     
-              <button class="action-btn">
-                <ion-icon name="bag-handle-outline"></ion-icon>
-                <span class="count">0</span>
-              </button>
+              <a href="{% url 'cart-detail' %}">
+                <button class="action-btn">
+                  <ion-icon name="bag-handle-outline">
+                  </ion-icon>
+                  <span class="count">{{ cart_item_count }}</span>
+                </button>
+              </a>
     
             </div>
     
@@ -2699,7 +2704,7 @@
         
                     <!-- Add to Cart Button -->
                     <div class="add-to-cart">
-                        <button>Add to Cart</button>
+                        <a href="{% url 'add-to-cart' product.id %}"><button>Add to Cart</button></a>
                     </div>
                 </div>
             </div>

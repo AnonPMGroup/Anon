@@ -2146,15 +2146,20 @@
                 </form>
               </button>
     
-              <button class="action-btn">
-                <ion-icon name="heart-outline"></ion-icon>
-                <span class="count">0</span>
-              </button>
+              <a href="{% url 'favorite-list' %}">
+                <button class="action-btn">
+                  <ion-icon name="heart-outline"></ion-icon>
+                  <span class="count">{{ fav_item_count }}</span>
+                </button>
+              </a>
     
-              <button class="action-btn">
-                <ion-icon name="bag-handle-outline"></ion-icon>
-                <span class="count">0</span>
-              </button>
+              <a href="{% url 'cart-detail' %}">
+                <button class="action-btn">
+                  <ion-icon name="bag-handle-outline">
+                  </ion-icon>
+                  <span class="count">{{ cart_item_count }}</span>
+                </button>
+              </a>
     
             </div>
     
@@ -2675,32 +2680,48 @@
       </header>
       <main>
         <div class="product-grid">
-         
-            {% for product in products %}
-            <div class="showcase">
+          {% for product in products %}
+          <div class="showcase">
+              <a href="{% url 'product-detail' product.id %}">
+                  <div class="showcase-banner">
+      
+                      <img src="{{ product.image.url }}" alt="{{ product.name }}" width="300" height="400" class="product-img default">
+                      <img src="{{ product.image.url }}" alt="{{ product.name }}" width="300" height="400" class="product-img hover">
 
-                <div class="showcase-banner">
-  
-                  <img src="{{ product.image.url }}" alt="{{ product.name }}" width="300" class="product-img default">
-                  <img src="{{ product.image.url }}" alt="{{ product.name }}" width="300" class="product-img hover">
-  
-                </div>
-                <div class="showcase-content">
-                  <a href="{% url 'product-detail' product.id %}" class="showcase-category">{{ product.name }}</a>
-                  <a href="#">
-                    <h3 class="showcase-title">{{ product.description }}</h3>
-                  </a>
-  
-                  <div class="price-box">
-                    <p class="price">{{ product.price }}</p>
+              
+                      <div class="showcase-actions">
+        
+                        <form method="POST" action="{% url 'toggle-favorite' product.id %}">
+                            {% csrf_token %}
+                            <button class="btn-action" type="submit" style="background: none; border: none; cursor: pointer;">
+                              {% if product.id in favorites %}
+                                    <ion-icon name="heart-sharp" style="font-size: 24px; color: red;"></ion-icon>
+                                {% else %}
+                                    <ion-icon name="heart-outline" style="font-size: 24px; color: black;"></ion-icon>
+                                {% endif %}
+                            </button>
+                        </form>
+                    </div>
+                    
+                    
+      
                   </div>
-  
-                </div>
-  
-            </div>
-            {% endfor %}
-     
-        </div>
+                  <div class="showcase-content">
+                      <a href="#" class="showcase-category">{{ product.name }}</a>
+                      <a href="#">
+                          <h3 class="showcase-title">{{ product.description }}</h3>
+                      </a>
+      
+                      <div class="price-box">
+                          <p class="price">{{ product.price }}</p>
+                      </div>
+      
+                  </div>
+              </a>
+          </div>
+          {% endfor %}
+      </div>
+      
     </main>
       <footer>
 

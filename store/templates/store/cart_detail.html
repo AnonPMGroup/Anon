@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Cart</title>
+    <style>
+        .quantity-buttons {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .quantity-buttons button {
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Your Cart</h1>
+    <ul>
+        {% for item in cart.items.all %}
+            <li>
+                {{ item.product.name }} - ${{ item.product.price }} x {{ item.quantity }} pcs
+                = ${{ item.total_price }}
+                <div class="quantity-buttons">
+                    <form action="{% url 'increase-quantity' item.product.id %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit">+</button>
+                    </form>
+                    <form action="{% url 'decrease-quantity' item.product.id %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit">-</button>
+                    </form>
+                </div>
+                <a href="{% url 'remove-from-cart' item.product.id %}">Remove</a>
+            </li>
+        {% endfor %}
+    </ul>
+    <p>Total: ${{ cart.total_price }}</p>
+    <a href="{% url 'home' %}">Continue Shopping</a>
+</body>
+</html>
