@@ -10,11 +10,20 @@
 <body>
     <div class="registration-form">
         <h1>Register</h1>
-        <form method="POST" action="{% url 'register' %}">
+        {% if errors %}
+            <div style="color: red; margin-bottom: 20px;">
+                <ul>
+                    {% for error in errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+        <form action="" method="POST">
             {% csrf_token %}
             <div class="input-group">
-                <label for="username">Username</label>
-                <input type="text" id="username" name="username" placeholder="Your username" required>
+                <label for="name">Full Name</label>
+                <input type="text" id="name" name="name" placeholder="Your full name" required>
             </div>
     
             <div class="input-group">
@@ -28,8 +37,8 @@
             </div>
     
             <div class="input-group">
-                <label for="confirm_password">Confirm Password</label>
-                <input type="password" id="confirm_password" name="confirm_password" placeholder="Confirm your password" required>
+                <label for="confirm-password">Confirm Password</label>
+                <input type="password" id="confirm-password" name="confirm-password" placeholder="Confirm your password" required>
             </div>
     
             <div class="input-group">
@@ -37,6 +46,7 @@
             </div>
         </form>
     </div>
+    
     
 </body>
 </html>

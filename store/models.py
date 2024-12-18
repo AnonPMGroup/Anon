@@ -41,6 +41,13 @@ class Product(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата добавления")
     updated_at = models.DateTimeField(auto_now=True, verbose_name="Дата обновления")
 
+    def average_rating(self):
+        avg = self.ratings.aggregate(models.Avg('rating'))['rating__avg']
+        return round(avg, 1) if avg else 0
+
+    def total_ratings(self):
+        return self.ratings.count()
+
     class Meta:
         verbose_name = "Продукт"
         verbose_name_plural = "Продукты"
@@ -81,4 +88,15 @@ class Favorite(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.product.name}"
-    
+
+class Rating(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='ratings')
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    rating = models.PositiveSmallIntegerField(default=1) 
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('product', 'user')  
+
+    def __str__(self):
+        return f"{self.user.username} rated {self.product.name} as {self.rating}"

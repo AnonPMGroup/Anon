@@ -4,7 +4,31 @@ from django.http import HttpResponse
 from django.contrib.auth.models import User
 from .models import *
 from django.urls import reverse
+from django.core.exceptions import ValidationError
+from django.core.validators import validate_email
+from django.contrib.auth.password_validation import validate_password
+from django.db.models import Avg
+from random import sample
 
+
+def get_random_products():
+    products = list(Product.objects.all()) 
+    return sample(products, min(len(products), 4)) 
+
+def get_top_rated_products():
+    return Product.objects.annotate(average_rating=Avg('ratings__rating')).order_by('-average_rating')[:4]
+
+def rate_product(request, product_id):
+    if request.method == 'POST':
+        product = get_object_or_404(Product, id=product_id)
+        user_rating = int(request.POST.get('rating')) 
+        user_rating = max(1, min(user_rating, 5)) 
+
+        rating, created = Rating.objects.get_or_create(user=request.user, product=product)
+        rating.rating = user_rating
+        rating.save()
+
+        return redirect('product-detail', pk=product.id)
 
 def get_user_favorites(user):
     return Favorite.objects.filter(user=user).select_related('product')
@@ -20,7 +44,8 @@ def toggle_favorite(request, product_id):
 
 def favorite_list(request):
     favorites = get_user_favorites(request.user)
-    return render(request, 'store/favorite_list.html', {'favorites': favorites})
+    categories = Category.objects.all()
+    return render(request, 'store/favorite_list.html', {'favorites': favorites, 'categories': categories})
 
 def get_last_four_products():
     return Product.objects.order_by('-created_at')[:4]
@@ -67,7 +92,8 @@ def clear_cart(user):
 
 def cart_detail(request):
     cart = Cart.objects.get(user=request.user)
-    return render(request, 'store/cart_detail.html', {'cart': cart})
+    categories = Category.objects.all()
+    return render(request, 'store/cart_detail.html', {'cart': cart, 'categories': categories})
 
 def add_to_cart_view(request, product_id):
     add_to_cart(request.user, product_id)
@@ -106,7 +132,30 @@ def product_list(request):
 def product_detail(request, pk):
     product = get_object_or_404(Product, pk=pk)
     categories = Category.objects.all()
-    return render(request, 'store/product_detail.html', {'product': product, "categories": categories})
+    recently_viewed_products = None
+    if 'recently_viewed' in request.session:
+        if pk in request.session['recently_viewed']:
+            request.session['recently_viewed'].remove(pk)
+
+        products = Product.objects.filter(pk__in=request.session['recently_viewed'])
+        recently_viewed_products = sorted(products,
+                                          key=lambda x: request.session['recently_viewed'].index(x.id)
+                                          )
+        request.session['recently_viewed'].insert(0, pk)
+        if len(request.session['recently_viewed']) > 5:
+            request.session['recently_viewed'].pop()
+    else:
+        request.session['recently_viewed'] = [pk]
+
+    request.session.modified = True
+    user_rating = Rating.objects.filter(user=request.user, product=product).first()
+    if user_rating:
+        user_rating = user_rating.rating
+    return render(request, 'store/product_detail.html', 
+                  {'product': product,
+                    "categories": categories,
+                      'recently_viewed_products': recently_viewed_products,
+                        'user_rating': user_rating or 0})
 
 
 def login_view(request):
@@ -123,15 +172,48 @@ def login_view(request):
 
 def register_view(request):
     if request.method == 'POST':
-        username = request.POST.get('username')
+        full_name = request.POST.get('name')
+        email = request.POST.get('email')
         password = request.POST.get('password')
-        User.objects.create_user(username=username, password=password)
-        return redirect('login')  
-    return render(request, 'store/register.html')  
+        confirm_password = request.POST.get('confirm-password')
+
+        errors = []
+
+        try:
+            validate_email(email)
+        except ValidationError:
+            errors.append("Enter a valid email address.")
+
+        if User.objects.filter(email=email).exists():
+            errors.append("Email already exists.")
+
+        try:
+            validate_password(password)
+        except ValidationError as e:
+            errors.extend(e.messages)
+
+        if password != confirm_password:
+            errors.append("Passwords do not match.")
+
+        if errors:
+            return render(request, 'store/register.html', {'errors': errors})
+
+        user = User.objects.create_user(
+            username=email,
+            email=email,
+            password=password,
+            first_name=full_name
+        )
+        user.save()
+        return redirect('login')
+
+    return render(request, 'store/register.html')
 
 
 
 def index(request):
     if request.user.is_authenticated:
         categories = Category.objects.all()
-        return render(request, 'store/index.html', {'user': request.user, 'categories': categories, 'new_arrivals': get_last_four_products()})
+        return render(request, 'store/index.html', {'user': request.user, 'categories': categories,
+                                                     'new_arrivals': get_last_four_products(), 'top_rated': get_top_rated_products(),
+                                                     "trending": get_random_products()})

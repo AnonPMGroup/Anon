@@ -35,4 +35,5 @@ urlpatterns = [
     path('cart/decrease/<int:product_id>/', decrease_quantity_view, name='decrease-quantity'),
     path('favorites/toggle/<int:product_id>/', toggle_favorite, name='toggle-favorite'),
     path('favorites/', favorite_list, name='favorite-list'),
+    path('rate-product/<int:product_id>/', rate_product, name='rate-product'),
 ]
