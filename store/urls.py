@@ -36,4 +36,6 @@ urlpatterns = [
     path('favorites/toggle/<int:product_id>/', toggle_favorite, name='toggle-favorite'),
     path('favorites/', favorite_list, name='favorite-list'),
     path('rate-product/<int:product_id>/', rate_product, name='rate-product'),
+    path('bank/', bank, name='bank'),
+    path('success/', success, name='success')
 ]

@@ -6626,9 +6626,11 @@
             <div class="total">Total: ${{ cart.total_price }}</div>
           
             <!-- Buy Now Button -->
-            <div class="buy-now-container" id="buy-now-container">
-              <button class="buy-now-btn">Buy Now</button>
-            </div>
+            <a href="{% url 'bank' %}">
+              <div class="buy-now-container" id="buy-now-container">
+                <button class="buy-now-btn">Buy Now</button>
+              </div>
+            </a>
           
             <!-- Continue Shopping Link -->
             <a href="{% url 'home' %}" class="continue-shopping">Continue Shopping</a>

@@ -10,6 +10,9 @@ from django.contrib.auth.password_validation import validate_password
 from django.db.models import Avg
 from random import sample
 
+def get_random_product():
+    products = list(Product.objects.all()) 
+    return sample(products, min(len(products), 1)) 
 
 def get_random_products():
     products = list(Product.objects.all()) 
@@ -209,11 +212,18 @@ def register_view(request):
 
     return render(request, 'store/register.html')
 
+def bank(request):
+    return render(request, 'store/bank.html')
 
+def success(request):
+    return render(request, 'store/success.html')
 
 def index(request):
     if request.user.is_authenticated:
         categories = Category.objects.all()
+        products = Product.objects.all()
         return render(request, 'store/index.html', {'user': request.user, 'categories': categories,
                                                      'new_arrivals': get_last_four_products(), 'top_rated': get_top_rated_products(),
-                                                     "trending": get_random_products()})
+                                                     'trending': get_random_products(),
+                                                     'products': products,
+                                                     'random_products': get_random_product()})
